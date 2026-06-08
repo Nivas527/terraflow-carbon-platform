@@ -1,0 +1,6 @@
+@CarbonFootprint.Api_HostAddress = http://localhost:5125
+
+GET {{CarbonFootprint.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

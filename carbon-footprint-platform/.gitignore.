@@ -1,0 +1,12 @@
+# Exclude .NET build artifacts
+**/bin/
+**/obj/
+
+# Exclude Flutter build artifacts
+**/.dart_tool/
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+
+# Exclude OS specific files
+.DS_Store
