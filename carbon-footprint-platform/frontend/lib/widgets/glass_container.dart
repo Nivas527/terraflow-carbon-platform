@@ -28,9 +28,8 @@ class GlassContainer extends StatelessWidget {
   /// Border color outlining the container (defaults to low opacity white).
   final Color? borderColor;
 
-  /// Instantiates a [GlassContainer].
   const GlassContainer({
-    Key? key,
+    super.key,
     required this.child,
     this.width,
     this.height,
@@ -39,7 +38,7 @@ class GlassContainer extends StatelessWidget {
     this.borderRadius = 16.0,
     this.gradientColors,
     this.borderColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

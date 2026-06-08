@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 /// Represents a daily carbon log containing emissions telemetry
 /// across transportation, electricity usage, and waste generation.
 class DailyEmission {

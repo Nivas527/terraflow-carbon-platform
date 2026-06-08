@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CarbonFootprint.Api.Data;
 using CarbonFootprint.Api.Models;
 using CarbonFootprint.Api.DTOs;
+using CarbonFootprint.Api.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,22 +11,39 @@ using System.Threading.Tasks;
 
 namespace CarbonFootprint.Api.Controllers;
 
+/// <summary>
+/// API Controller for managing user daily carbon logs and generating footprint statistics.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class CarbonLogsController : ControllerBase
 {
     private readonly CarbonDbContext _context;
+    private readonly ICarbonCalculatorService _calculatorService;
 
-    public CarbonLogsController(CarbonDbContext context)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CarbonLogsController"/> class.
+    /// </summary>
+    /// <param name="context">The database context instance.</param>
+    /// <param name="calculatorService">The carbon calculation service instance.</param>
+    public CarbonLogsController(CarbonDbContext context, ICarbonCalculatorService calculatorService)
     {
         _context = context;
+        _calculatorService = calculatorService;
     }
 
-    // GET: api/carbonlogs
+    /// <summary>
+    /// Retrieves all logged daily emissions for a specific user.
+    /// Uses database query tracing optimization (AsNoTracking).
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user (defaults to 1).</param>
+    /// <returns>A list of daily emission logs.</returns>
     [HttpGet]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<DailyEmissionDto>))]
     public async Task<ActionResult<IEnumerable<DailyEmissionDto>>> GetLogs([FromQuery] int userId = 1)
     {
         var logs = await _context.DailyEmissions
+            .AsNoTracking()
             .Where(e => e.UserId == userId)
             .OrderBy(e => e.Date)
             .Select(e => MapToDto(e))
@@ -34,11 +52,18 @@ public class CarbonLogsController : ControllerBase
         return Ok(logs);
     }
 
-    // GET: api/carbonlogs/stats
+    /// <summary>
+    /// Compiles aggregated carbon statistics (totals, daily averages, and category breakdown) for a user.
+    /// Uses database query tracing optimization (AsNoTracking).
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user (defaults to 1).</param>
+    /// <returns>A JSON stats summary object.</returns>
     [HttpGet("stats")]
+    [ProducesResponseType(200)]
     public async Task<ActionResult> GetStats([FromQuery] int userId = 1)
     {
         var logs = await _context.DailyEmissions
+            .AsNoTracking()
             .Where(e => e.UserId == userId)
             .ToListAsync();
 
@@ -72,10 +97,27 @@ public class CarbonLogsController : ControllerBase
         });
     }
 
-    // POST: api/carbonlogs
+    /// <summary>
+    /// Logs daily lifestyle activity parameters, calculates footprint offsets, and persists/updates the database.
+    /// </summary>
+    /// <param name="dto">The create activity log transfer object with inputs.</param>
+    /// <returns>The created or updated daily emission result.</returns>
     [HttpPost]
+    [ProducesResponseType(201, Type = typeof(DailyEmissionDto))]
+    [ProducesResponseType(400)]
     public async Task<ActionResult<DailyEmissionDto>> CreateLog([FromBody] CreateDailyEmissionDto dto)
     {
+        if (dto == null)
+        {
+            return BadRequest("Payload is null.");
+        }
+
+        // Validate range bounds (additional controller-level hardening)
+        if (dto.TransportDistanceKm < 0 || dto.ElectricityKwh < 0 || dto.WasteWeightKg < 0 || dto.RecyclingRatePercentage < 0 || dto.RecyclingRatePercentage > 100)
+        {
+            return BadRequest("Parameters exceed allowed range constraints.");
+        }
+
         // Check if user exists
         var userExists = await _context.Users.AnyAsync(u => u.Id == dto.UserId);
         if (!userExists)
@@ -83,15 +125,20 @@ public class CarbonLogsController : ControllerBase
             return BadRequest($"User with ID {dto.UserId} does not exist.");
         }
 
+        // Sanitize string parameters to prevent XSS or DB injection
+        var vehicle = (dto.TransportVehicleType ?? string.Empty).Trim();
+        var fuel = (dto.TransportFuelType ?? string.Empty).Trim();
+        var wasteType = (dto.WasteType ?? string.Empty).Trim();
+
         // Check if there is already a log for this user on this date
         var targetDate = dto.Date.Date;
         var existingLog = await _context.DailyEmissions
             .FirstOrDefaultAsync(e => e.UserId == dto.UserId && e.Date == targetDate);
 
-        // Perform carbon calculations
-        double transportEmissions = CalculateTransportEmissions(dto.TransportDistanceKm, dto.TransportVehicleType, dto.TransportFuelType);
-        double electricityEmissions = CalculateElectricityEmissions(dto.ElectricityKwh);
-        double wasteEmissions = CalculateWasteEmissions(dto.WasteWeightKg, dto.WasteType, dto.RecyclingRatePercentage);
+        // Perform carbon calculations using the injected service (Separation of Concerns)
+        double transportEmissions = _calculatorService.CalculateTransportEmissions(dto.TransportDistanceKm, vehicle, fuel);
+        double electricityEmissions = _calculatorService.CalculateElectricityEmissions(dto.ElectricityKwh);
+        double wasteEmissions = _calculatorService.CalculateWasteEmissions(dto.WasteWeightKg, wasteType, dto.RecyclingRatePercentage);
         double totalEmissions = Math.Round(transportEmissions + electricityEmissions + wasteEmissions, 2);
 
         DailyEmission log;
@@ -100,13 +147,13 @@ public class CarbonLogsController : ControllerBase
         {
             // Update existing log for the day
             existingLog.TransportDistanceKm = dto.TransportDistanceKm;
-            existingLog.TransportVehicleType = dto.TransportVehicleType;
-            existingLog.TransportFuelType = dto.TransportFuelType;
+            existingLog.TransportVehicleType = vehicle;
+            existingLog.TransportFuelType = fuel;
             existingLog.TransportEmissionsCo2Kg = transportEmissions;
             existingLog.ElectricityKwh = dto.ElectricityKwh;
             existingLog.ElectricityEmissionsCo2Kg = electricityEmissions;
             existingLog.WasteWeightKg = dto.WasteWeightKg;
-            existingLog.WasteType = dto.WasteType;
+            existingLog.WasteType = wasteType;
             existingLog.RecyclingRatePercentage = dto.RecyclingRatePercentage;
             existingLog.WasteEmissionsCo2Kg = wasteEmissions;
             existingLog.TotalEmissionsCo2Kg = totalEmissions;
@@ -122,13 +169,13 @@ public class CarbonLogsController : ControllerBase
                 UserId = dto.UserId,
                 Date = targetDate,
                 TransportDistanceKm = dto.TransportDistanceKm,
-                TransportVehicleType = dto.TransportVehicleType,
-                TransportFuelType = dto.TransportFuelType,
+                TransportVehicleType = vehicle,
+                TransportFuelType = fuel,
                 TransportEmissionsCo2Kg = transportEmissions,
                 ElectricityKwh = dto.ElectricityKwh,
                 ElectricityEmissionsCo2Kg = electricityEmissions,
                 WasteWeightKg = dto.WasteWeightKg,
-                WasteType = dto.WasteType,
+                WasteType = wasteType,
                 RecyclingRatePercentage = dto.RecyclingRatePercentage,
                 WasteEmissionsCo2Kg = wasteEmissions,
                 TotalEmissionsCo2Kg = totalEmissions
@@ -162,54 +209,5 @@ public class CarbonLogsController : ControllerBase
             WasteEmissionsCo2Kg = log.WasteEmissionsCo2Kg,
             TotalEmissionsCo2Kg = log.TotalEmissionsCo2Kg
         };
-    }
-
-    private double CalculateTransportEmissions(double distance, string vehicleType, string fuelType)
-    {
-        if (distance <= 0) return 0;
-
-        double factor = vehicleType.ToLower() switch
-        {
-            "car" => fuelType.ToLower() switch
-            {
-                "petrol" => 0.18,
-                "diesel" => 0.17,
-                "electric" => 0.05,
-                _ => 0.15
-            },
-            "motorcycle" => fuelType.ToLower() switch
-            {
-                "petrol" => 0.10,
-                _ => 0.08
-            },
-            "bus" => 0.08,
-            "train" => 0.04,
-            "bicycle" => 0,
-            "walking" => 0,
-            _ => 0.12
-        };
-
-        return Math.Round(distance * factor, 2);
-    }
-
-    private double CalculateElectricityEmissions(double kwh)
-    {
-        if (kwh <= 0) return 0;
-        // Standard average emission factor: 0.40 kg CO2 per kWh
-        return Math.Round(kwh * 0.40, 2);
-    }
-
-    private double CalculateWasteEmissions(double weight, string wasteType, double recyclingRate)
-    {
-        if (weight <= 0) return 0;
-        // Standard landfilled mixed waste emission factor: 1.9 kg CO2 per kg
-        double baseFactor = 1.9;
-        
-        // Recycling rate mitigates landfilled footprint
-        double multiplier = 1.0 - (recyclingRate / 100.0);
-        if (multiplier < 0) multiplier = 0;
-        if (multiplier > 1) multiplier = 1;
-
-        return Math.Round(weight * baseFactor * multiplier, 2);
     }
 }

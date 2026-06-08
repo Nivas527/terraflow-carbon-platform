@@ -8,11 +8,11 @@ class AiInsightsBox extends StatefulWidget {
   final double wasteCo2;
 
   const AiInsightsBox({
-    Key? key,
+    super.key,
     required this.transportCo2,
     required this.electricityCo2,
     required this.wasteCo2,
-  }) : super(key: key);
+  });
 
   @override
   State<AiInsightsBox> createState() => _AiInsightsBoxState();

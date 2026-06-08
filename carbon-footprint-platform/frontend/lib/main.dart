@@ -7,7 +7,7 @@ void main() {
 }
 
 class TerraFlowApp extends StatelessWidget {
-  const TerraFlowApp({Key? key}) : super(key: key);
+  const TerraFlowApp({super.key});
 
   @override
   Widget build(BuildContext context) {

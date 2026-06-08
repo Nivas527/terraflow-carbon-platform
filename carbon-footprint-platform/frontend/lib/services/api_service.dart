@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/daily_emission.dart';
 
@@ -141,7 +142,7 @@ class ApiService {
         throw Exception('Server returned status: ${response.statusCode}');
       }
     } catch (e) {
-      print('API fetch logs failed ($e). Falling back to mock data.');
+      debugPrint('API fetch logs failed ($e). Falling back to mock data.');
       _mockLogs.sort((a, b) => a.date.compareTo(b.date));
       return List.from(_mockLogs);
     }
@@ -160,7 +161,7 @@ class ApiService {
         throw Exception('Server returned status: ${response.statusCode}');
       }
     } catch (e) {
-      print('API fetch stats failed ($e). Calculating mock stats locally.');
+      debugPrint('API fetch stats failed ($e). Calculating mock stats locally.');
       if (_mockLogs.isEmpty) return CarbonStats.empty();
 
       double totalEmissions = 0.0;
@@ -246,7 +247,7 @@ class ApiService {
         throw Exception('Server returned status: ${response.statusCode}');
       }
     } catch (e) {
-      print('API add log failed ($e). Calculating results locally and saving to mock storage.');
+      debugPrint('API add log failed ($e). Calculating results locally and saving to mock storage.');
       
       // Calculate local values using same formulas as Web API
       double transportEmissions = _calculateTransport(distance, sanitizedVehicle, sanitizedFuel);

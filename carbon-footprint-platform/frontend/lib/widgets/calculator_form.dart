@@ -6,7 +6,7 @@ import 'glass_container.dart';
 class CalculatorForm extends StatefulWidget {
   final Function(DailyEmission) onLogAdded;
 
-  const CalculatorForm({Key? key, required this.onLogAdded}) : super(key: key);
+  const CalculatorForm({super.key, required this.onLogAdded});
 
   @override
   State<CalculatorForm> createState() => _CalculatorFormState();
@@ -82,8 +82,10 @@ class _CalculatorFormState extends State<CalculatorForm> {
         _recyclingRate,
       );
       widget.onLogAdded(newLog);
+      if (!mounted) return;
       Navigator.of(context).pop();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to save log: $e')),
       );

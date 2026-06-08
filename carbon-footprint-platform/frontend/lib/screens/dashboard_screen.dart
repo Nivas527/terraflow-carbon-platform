@@ -7,7 +7,7 @@ import '../widgets/calculator_form.dart';
 import '../widgets/ai_insights_box.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -37,7 +37,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading dashboard: $e');
+      debugPrint('Error loading dashboard: $e');
       setState(() => _isLoading = false);
     }
   }
@@ -251,7 +251,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildMetricsGrid(bool isDesktop) {
-    final double cardPadding = isDesktop ? 16 : 12;
 
     return GridView.count(
       shrinkWrap: true,

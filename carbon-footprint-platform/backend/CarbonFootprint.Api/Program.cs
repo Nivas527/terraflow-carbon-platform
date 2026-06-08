@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using CarbonFootprint.Api.Data;
+using CarbonFootprint.Api.Services;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,9 @@ var serverVersion = new MySqlServerVersion(new Version(8, 0, 30));
 
 builder.Services.AddDbContext<CarbonDbContext>(options =>
     options.UseMySql(connectionString, serverVersion));
+
+// Register Carbon Calculator Service
+builder.Services.AddScoped<ICarbonCalculatorService, CarbonCalculatorService>();
 
 // Add controllers with JSON settings
 builder.Services.AddControllers()
