@@ -26,22 +26,19 @@ class TerraFlowApp extends StatelessWidget {
           surface: const Color(0xFF111622),
           background: const Color(0xFF0A0D14),
         ),
-        textTheme: GoogleFonts.outfitTextTheme(
-          ThemeData.dark().textTheme,
-        ).copyWith(
-          headlineSmall: GoogleFonts.outfit(
-            color: Colors.white,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2.0,
-          ),
-          titleLarge: GoogleFonts.outfit(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-          bodyMedium: GoogleFonts.outfit(
-            color: Colors.white70,
-          ),
-        ),
+        textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme)
+            .copyWith(
+              headlineSmall: GoogleFonts.outfit(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 2.0,
+              ),
+              titleLarge: GoogleFonts.outfit(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+              bodyMedium: GoogleFonts.outfit(color: Colors.white70),
+            ),
         sliderTheme: SliderThemeData(
           activeTrackColor: Colors.greenAccent,
           thumbColor: Colors.greenAccent,

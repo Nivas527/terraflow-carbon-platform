@@ -70,12 +70,15 @@ class DailyEmission {
       transportDistanceKm: (json['transportDistanceKm'] as num).toDouble(),
       transportVehicleType: json['transportVehicleType'] ?? '',
       transportFuelType: json['transportFuelType'] ?? '',
-      transportEmissionsCo2Kg: (json['transportEmissionsCo2Kg'] as num).toDouble(),
+      transportEmissionsCo2Kg: (json['transportEmissionsCo2Kg'] as num)
+          .toDouble(),
       electricityKwh: (json['electricityKwh'] as num).toDouble(),
-      electricityEmissionsCo2Kg: (json['electricityEmissionsCo2Kg'] as num).toDouble(),
+      electricityEmissionsCo2Kg: (json['electricityEmissionsCo2Kg'] as num)
+          .toDouble(),
       wasteWeightKg: (json['wasteWeightKg'] as num).toDouble(),
       wasteType: json['wasteType'] ?? '',
-      recyclingRatePercentage: (json['recyclingRatePercentage'] as num).toDouble(),
+      recyclingRatePercentage: (json['recyclingRatePercentage'] as num)
+          .toDouble(),
       wasteEmissionsCo2Kg: (json['wasteEmissionsCo2Kg'] as num).toDouble(),
       totalEmissionsCo2Kg: (json['totalEmissionsCo2Kg'] as num).toDouble(),
     );
@@ -132,7 +135,8 @@ class CarbonStats {
   factory CarbonStats.fromJson(Map<String, dynamic> json) {
     return CarbonStats(
       totalEmissionsCo2Kg: (json['totalEmissionsCo2Kg'] as num).toDouble(),
-      averageDailyEmissionsCo2Kg: (json['averageDailyEmissionsCo2Kg'] as num).toDouble(),
+      averageDailyEmissionsCo2Kg: (json['averageDailyEmissionsCo2Kg'] as num)
+          .toDouble(),
       transportTotalCo2Kg: (json['transportTotalCo2Kg'] as num).toDouble(),
       electricityTotalCo2Kg: (json['electricityTotalCo2Kg'] as num).toDouble(),
       wasteTotalCo2Kg: (json['wasteTotalCo2Kg'] as num).toDouble(),

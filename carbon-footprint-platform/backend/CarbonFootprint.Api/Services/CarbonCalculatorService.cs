@@ -52,7 +52,7 @@ public class CarbonCalculatorService : ICarbonCalculatorService
     public double CalculateWasteEmissions(double weight, string wasteType, double recyclingRate)
     {
         if (weight <= 0) return 0;
-        
+
         // Enforce recycling rate boundaries safely between 0.0 and 100.0
         double rate = Math.Clamp(recyclingRate, 0.0, 100.0);
 

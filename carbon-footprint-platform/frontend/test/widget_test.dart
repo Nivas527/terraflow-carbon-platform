@@ -8,7 +8,9 @@ void main() {
     GoogleFonts.config.allowRuntimeFetching = false;
   });
 
-  testWidgets('TerraFlowApp Dashboard UI Smoke Test', (WidgetTester tester) async {
+  testWidgets('TerraFlowApp Dashboard UI Smoke Test', (
+    WidgetTester tester,
+  ) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const TerraFlowApp());
     await tester.pump();

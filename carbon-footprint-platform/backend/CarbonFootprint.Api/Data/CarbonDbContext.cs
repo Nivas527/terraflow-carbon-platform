@@ -32,7 +32,7 @@ public class CarbonDbContext : DbContext
         {
             entity.ToTable("DailyEmissions");
             entity.HasKey(e => e.Id);
-            
+
             entity.HasOne(d => d.User)
                   .WithMany(p => p.DailyEmissions)
                   .HasForeignKey(d => d.UserId)

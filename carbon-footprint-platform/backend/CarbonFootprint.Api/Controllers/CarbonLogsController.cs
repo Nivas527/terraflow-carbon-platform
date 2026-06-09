@@ -53,6 +53,29 @@ public class CarbonLogsController : ControllerBase
     }
 
     /// <summary>
+    /// Retrieves a single daily emission log by its unique ID.
+    /// Uses database query tracing optimization (AsNoTracking).
+    /// </summary>
+    /// <param name="id">The unique identifier of the daily emission log.</param>
+    /// <returns>The daily emission log details if found; otherwise, NotFound.</returns>
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(200, Type = typeof(DailyEmissionDto))]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<DailyEmissionDto>> GetLog(int id)
+    {
+        var log = await _context.DailyEmissions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (log == null)
+        {
+            return NotFound($"Log with ID {id} was not found.");
+        }
+
+        return Ok(MapToDto(log));
+    }
+
+    /// <summary>
     /// Compiles aggregated carbon statistics (totals, daily averages, and category breakdown) for a user.
     /// Uses database query tracing optimization (AsNoTracking).
     /// </summary>
@@ -130,6 +153,24 @@ public class CarbonLogsController : ControllerBase
         var fuel = (dto.TransportFuelType ?? string.Empty).Trim();
         var wasteType = (dto.WasteType ?? string.Empty).Trim();
 
+        // Validate against enum/set bounds (Security & Code Quality hardening)
+        var allowedVehicles = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Car", "Bus", "Train", "Motorcycle", "Bicycle", "Walking" };
+        var allowedFuels = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Petrol", "Diesel", "Electric", "None" };
+        var allowedWasteTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Organic", "Plastic", "Paper", "Mixed" };
+
+        if (!allowedVehicles.Contains(vehicle))
+        {
+            return BadRequest($"Invalid vehicle type '{vehicle}'. Allowed values are: {string.Join(", ", allowedVehicles)}");
+        }
+        if (!allowedFuels.Contains(fuel))
+        {
+            return BadRequest($"Invalid fuel type '{fuel}'. Allowed values are: {string.Join(", ", allowedFuels)}");
+        }
+        if (!allowedWasteTypes.Contains(wasteType))
+        {
+            return BadRequest($"Invalid waste type '{wasteType}'. Allowed values are: {string.Join(", ", allowedWasteTypes)}");
+        }
+
         // Check if there is already a log for this user on this date
         var targetDate = dto.Date.Date;
         var existingLog = await _context.DailyEmissions
@@ -187,7 +228,7 @@ public class CarbonLogsController : ControllerBase
         await _context.SaveChangesAsync();
 
         var responseDto = MapToDto(log);
-        return CreatedAtAction(nameof(GetLogs), new { userId = log.UserId }, responseDto);
+        return CreatedAtAction(nameof(GetLog), new { id = log.Id }, responseDto);
     }
 
     private static DailyEmissionDto MapToDto(DailyEmission log)

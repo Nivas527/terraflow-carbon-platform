@@ -15,7 +15,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final ApiService _apiService = ApiService();
-  
+
   List<DailyEmission> _logs = [];
   CarbonStats _stats = CarbonStats.empty();
   bool _isLoading = true;
@@ -71,7 +71,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF0B0E14),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.greenAccent))
+          ? const Center(
+              child: CircularProgressIndicator(color: Colors.greenAccent),
+            )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
               child: Center(
@@ -111,9 +113,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               child: SizedBox(
                                 height: 620, // Lock heights so it matches
                                 child: AiInsightsBox(
-                                  transportCo2: _logs.isEmpty ? 0.0 : _logs.last.transportEmissionsCo2Kg,
-                                  electricityCo2: _logs.isEmpty ? 0.0 : _logs.last.electricityEmissionsCo2Kg,
-                                  wasteCo2: _logs.isEmpty ? 0.0 : _logs.last.wasteEmissionsCo2Kg,
+                                  transportCo2: _logs.isEmpty
+                                      ? 0.0
+                                      : _logs.last.transportEmissionsCo2Kg,
+                                  electricityCo2: _logs.isEmpty
+                                      ? 0.0
+                                      : _logs.last.electricityEmissionsCo2Kg,
+                                  wasteCo2: _logs.isEmpty
+                                      ? 0.0
+                                      : _logs.last.wasteEmissionsCo2Kg,
                                 ),
                               ),
                             ),
@@ -127,9 +135,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             SizedBox(
                               height: 380,
                               child: AiInsightsBox(
-                                transportCo2: _logs.isEmpty ? 0.0 : _logs.last.transportEmissionsCo2Kg,
-                                electricityCo2: _logs.isEmpty ? 0.0 : _logs.last.electricityEmissionsCo2Kg,
-                                wasteCo2: _logs.isEmpty ? 0.0 : _logs.last.wasteEmissionsCo2Kg,
+                                transportCo2: _logs.isEmpty
+                                    ? 0.0
+                                    : _logs.last.transportEmissionsCo2Kg,
+                                electricityCo2: _logs.isEmpty
+                                    ? 0.0
+                                    : _logs.last.electricityEmissionsCo2Kg,
+                                wasteCo2: _logs.isEmpty
+                                    ? 0.0
+                                    : _logs.last.wasteEmissionsCo2Kg,
                               ),
                             ),
                             const SizedBox(height: 24),
@@ -153,7 +167,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.blur_on, color: Colors.greenAccent, size: 28),
+                  const Icon(
+                    Icons.blur_on,
+                    color: Colors.greenAccent,
+                    size: 28,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'TERRAFLOW',
@@ -180,7 +198,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     backgroundColor: Colors.greenAccent[400],
                     foregroundColor: Colors.black,
                     minimumSize: const Size(180, 48),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 8,
                     shadowColor: Colors.greenAccent.withOpacity(0.4),
                   ),
@@ -204,7 +224,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.blur_on, color: Colors.greenAccent, size: 28),
+                    const Icon(
+                      Icons.blur_on,
+                      color: Colors.greenAccent,
+                      size: 28,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'TERRAFLOW',
@@ -232,7 +256,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   backgroundColor: Colors.greenAccent[400],
                   foregroundColor: Colors.black,
                   minimumSize: const Size(180, 48),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   elevation: 8,
                   shadowColor: Colors.greenAccent.withOpacity(0.4),
                 ),
@@ -251,7 +277,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildMetricsGrid(bool isDesktop) {
-
     return GridView.count(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -299,43 +324,50 @@ class _DashboardScreenState extends State<DashboardScreen> {
     required IconData icon,
     required Color accentColor,
   }) {
-    return GlassContainer(
-      padding: const EdgeInsets.all(16.0),
-      borderColor: accentColor.withOpacity(0.12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(color: Colors.white54, fontSize: 12, fontWeight: FontWeight.bold),
-              ),
-              Icon(icon, color: accentColor.withOpacity(0.8), size: 20),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                value,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.5,
+    return Semantics(
+      label: '$title statistics card: Value is $value. Details: $subtitle.',
+      child: GlassContainer(
+        padding: const EdgeInsets.all(16.0),
+        borderColor: accentColor.withOpacity(0.12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white54,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                subtitle,
-                style: const TextStyle(color: Colors.white30, fontSize: 10),
-              ),
-            ],
-          ),
-        ],
+                Icon(icon, color: accentColor.withOpacity(0.8), size: 20),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: const TextStyle(color: Colors.white30, fontSize: 10),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -352,7 +384,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               const Text(
                 'Emissions Timeline',
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Row(
                 children: [
@@ -362,7 +398,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(width: 12),
                   _chartLegend('Waste', Colors.cyanAccent),
                 ],
-              )
+              ),
             ],
           ),
           const SizedBox(height: 24),
@@ -370,7 +406,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0, bottom: 8.0),
               child: _logs.isEmpty
-                  ? const Center(child: Text('No historical logs found', style: TextStyle(color: Colors.white30)))
+                  ? const Center(
+                      child: Text(
+                        'No historical logs found',
+                        style: TextStyle(color: Colors.white30),
+                      ),
+                    )
                   : LineChart(_getChartData()),
             ),
           ),
@@ -388,7 +429,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           decoration: BoxDecoration(shape: BoxShape.circle, color: color),
         ),
         const SizedBox(width: 4),
-        Text(label, style: const TextStyle(color: Colors.white54, fontSize: 10)),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white54, fontSize: 10),
+        ),
       ],
     );
   }
@@ -412,14 +456,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       gridData: FlGridData(
         show: true,
         drawVerticalLine: false,
-        getDrawingHorizontalLine: (value) => FlLine(
-          color: Colors.white.withOpacity(0.04),
-          strokeWidth: 1,
-        ),
+        getDrawingHorizontalLine: (value) =>
+            FlLine(color: Colors.white.withOpacity(0.04), strokeWidth: 1),
       ),
       titlesData: FlTitlesData(
         show: true,
-        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
         topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
@@ -427,7 +471,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             reservedSize: 28,
             getTitlesWidget: (value, meta) {
               return Text(
-                '${value.toInt()}k',
+                '${value.toInt()}',
                 style: const TextStyle(color: Colors.white30, fontSize: 10),
               );
             },
@@ -500,62 +544,89 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           const Text(
             'Recent Logs',
-            style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 16),
           if (_logs.isEmpty)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 24.0),
-              child: Center(child: Text('No logged logs yet', style: TextStyle(color: Colors.white30))),
+              child: Center(
+                child: Text(
+                  'No logged logs yet',
+                  style: TextStyle(color: Colors.white30),
+                ),
+              ),
             )
           else
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: _logs.length > 5 ? 5 : _logs.length,
-              separatorBuilder: (context, index) => const Divider(color: Colors.white12, height: 1),
+              separatorBuilder: (context, index) =>
+                  const Divider(color: Colors.white12, height: 1),
               itemBuilder: (context, index) {
                 // Return in reverse chronological order
                 final log = _logs[_logs.length - 1 - index];
-                final dateStr = '${log.date.year}-${log.date.month.toString().padLeft(2, '0')}-${log.date.day.toString().padLeft(2, '0')}';
+                final dateStr =
+                    '${log.date.year}-${log.date.month.toString().padLeft(2, '0')}-${log.date.day.toString().padLeft(2, '0')}';
 
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            dateStr,
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Transit: ${log.transportVehicleType} (${log.transportDistanceKm.toStringAsFixed(0)}km) | Energy: ${log.electricityKwh}kWh',
-                            style: const TextStyle(color: Colors.white30, fontSize: 11),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.greenAccent.withOpacity(0.08),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: Colors.greenAccent.withOpacity(0.2)),
+                return Semantics(
+                  label:
+                      'Log entry for date $dateStr: transit mode ${log.transportVehicleType} covering ${log.transportDistanceKm.toStringAsFixed(0)} kilometers, home electricity usage ${log.electricityKwh} kilowatt hours, daily carbon footprint total ${log.totalEmissionsCo2Kg.toStringAsFixed(2)} kilograms of CO2.',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              dateStr,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Transit: ${log.transportVehicleType} (${log.transportDistanceKm.toStringAsFixed(0)}km) | Energy: ${log.electricityKwh}kWh',
+                              style: const TextStyle(
+                                color: Colors.white30,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          '${log.totalEmissionsCo2Kg.toStringAsFixed(2)} kg CO2',
-                          style: const TextStyle(
-                            color: Colors.greenAccent,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'monospace',
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.greenAccent.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: Colors.greenAccent.withOpacity(0.2),
+                            ),
+                          ),
+                          child: Text(
+                            '${log.totalEmissionsCo2Kg.toStringAsFixed(2)} kg CO2',
+                            style: const TextStyle(
+                              color: Colors.greenAccent,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'monospace',
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },

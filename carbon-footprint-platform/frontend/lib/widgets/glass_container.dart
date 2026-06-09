@@ -70,10 +70,12 @@ class GlassContainer extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: gradientColors ?? [
-                  Colors.white.withOpacity(0.07),
-                  Colors.white.withOpacity(0.02),
-                ],
+                colors:
+                    gradientColors ??
+                    [
+                      Colors.white.withOpacity(0.07),
+                      Colors.white.withOpacity(0.02),
+                    ],
               ),
             ),
             child: child,

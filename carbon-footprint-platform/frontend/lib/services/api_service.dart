@@ -132,9 +132,10 @@ class ApiService {
   /// Falls back to local memory logs if the backend server is unreachable.
   Future<List<DailyEmission>> fetchLogs() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/carbonlogs?userId=$demoUserId'))
+      final response = await http
+          .get(Uri.parse('$baseUrl/carbonlogs?userId=$demoUserId'))
           .timeout(const Duration(seconds: 2));
-      
+
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((json) => DailyEmission.fromJson(json)).toList();
@@ -152,16 +153,19 @@ class ApiService {
   /// Computes figures locally using cached records if backend is offline.
   Future<CarbonStats> fetchStats() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/carbonlogs/stats?userId=$demoUserId'))
+      final response = await http
+          .get(Uri.parse('$baseUrl/carbonlogs/stats?userId=$demoUserId'))
           .timeout(const Duration(seconds: 2));
-      
+
       if (response.statusCode == 200) {
         return CarbonStats.fromJson(json.decode(response.body));
       } else {
         throw Exception('Server returned status: ${response.statusCode}');
       }
     } catch (e) {
-      debugPrint('API fetch stats failed ($e). Calculating mock stats locally.');
+      debugPrint(
+        'API fetch stats failed ($e). Calculating mock stats locally.',
+      );
       if (_mockLogs.isEmpty) return CarbonStats.empty();
 
       double totalEmissions = 0.0;
@@ -180,9 +184,13 @@ class ApiService {
 
       return CarbonStats(
         totalEmissionsCo2Kg: double.parse(totalEmissions.toStringAsFixed(2)),
-        averageDailyEmissionsCo2Kg: double.parse(averageDaily.toStringAsFixed(2)),
+        averageDailyEmissionsCo2Kg: double.parse(
+          averageDaily.toStringAsFixed(2),
+        ),
         transportTotalCo2Kg: double.parse(transportTotal.toStringAsFixed(2)),
-        electricityTotalCo2Kg: double.parse(electricityTotal.toStringAsFixed(2)),
+        electricityTotalCo2Kg: double.parse(
+          electricityTotal.toStringAsFixed(2),
+        ),
         wasteTotalCo2Kg: double.parse(wasteTotal.toStringAsFixed(2)),
         logCount: _mockLogs.length,
       );
@@ -233,11 +241,13 @@ class ApiService {
     };
 
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/carbonlogs'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(requestBody),
-      ).timeout(const Duration(seconds: 2));
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/carbonlogs'),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode(requestBody),
+          )
+          .timeout(const Duration(seconds: 2));
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         final newLog = DailyEmission.fromJson(json.decode(response.body));
@@ -247,13 +257,26 @@ class ApiService {
         throw Exception('Server returned status: ${response.statusCode}');
       }
     } catch (e) {
-      debugPrint('API add log failed ($e). Calculating results locally and saving to mock storage.');
-      
+      debugPrint(
+        'API add log failed ($e). Calculating results locally and saving to mock storage.',
+      );
+
       // Calculate local values using same formulas as Web API
-      double transportEmissions = _calculateTransport(distance, sanitizedVehicle, sanitizedFuel);
-      double electricityEmissions = double.parse((electricity * 0.40).toStringAsFixed(2));
-      double wasteEmissions = double.parse((waste * 1.9 * (1.0 - (recyclingRate / 100.0))).toStringAsFixed(2));
-      double totalEmissions = double.parse((transportEmissions + electricityEmissions + wasteEmissions).toStringAsFixed(2));
+      double transportEmissions = _calculateTransport(
+        distance,
+        sanitizedVehicle,
+        sanitizedFuel,
+      );
+      double electricityEmissions = double.parse(
+        (electricity * 0.40).toStringAsFixed(2),
+      );
+      double wasteEmissions = double.parse(
+        (waste * 1.9 * (1.0 - (recyclingRate / 100.0))).toStringAsFixed(2),
+      );
+      double totalEmissions = double.parse(
+        (transportEmissions + electricityEmissions + wasteEmissions)
+            .toStringAsFixed(2),
+      );
 
       final localLog = DailyEmission(
         id: _mockLogs.length + 1,
@@ -279,10 +302,11 @@ class ApiService {
 
   static void _updateMockLogs(DailyEmission newLog) {
     final today = DateTime.now();
-    final index = _mockLogs.indexWhere((l) => 
-        l.date.year == today.year && 
-        l.date.month == today.month && 
-        l.date.day == today.day
+    final index = _mockLogs.indexWhere(
+      (l) =>
+          l.date.year == today.year &&
+          l.date.month == today.month &&
+          l.date.day == today.day,
     );
 
     if (index != -1) {
@@ -293,25 +317,44 @@ class ApiService {
   }
 
   /// Internal utility to perform carbon calculation for travel.
-  static double _calculateTransport(double distance, String vehicleType, String fuelType) {
+  static double _calculateTransport(
+    double distance,
+    String vehicleType,
+    String fuelType,
+  ) {
     if (distance <= 0) return 0;
     double factor = 0.12;
     switch (vehicleType.toLowerCase()) {
       case 'car':
         switch (fuelType.toLowerCase()) {
-          case 'petrol': factor = 0.18; break;
-          case 'diesel': factor = 0.17; break;
-          case 'electric': factor = 0.05; break;
-          default: factor = 0.15;
+          case 'petrol':
+            factor = 0.18;
+            break;
+          case 'diesel':
+            factor = 0.17;
+            break;
+          case 'electric':
+            factor = 0.05;
+            break;
+          default:
+            factor = 0.15;
         }
         break;
       case 'motorcycle':
         factor = fuelType.toLowerCase() == 'petrol' ? 0.10 : 0.08;
         break;
-      case 'bus': factor = 0.08; break;
-      case 'train': factor = 0.04; break;
-      case 'bicycle': factor = 0.0; break;
-      case 'walking': factor = 0.0; break;
+      case 'bus':
+        factor = 0.08;
+        break;
+      case 'train':
+        factor = 0.04;
+        break;
+      case 'bicycle':
+        factor = 0.0;
+        break;
+      case 'walking':
+        factor = 0.0;
+        break;
     }
     return double.parse((distance * factor).toStringAsFixed(2));
   }

@@ -31,12 +31,36 @@ class _CalculatorFormState extends State<CalculatorForm> {
   double _recyclingRate = 30.0;
 
   final List<Map<String, dynamic>> _vehicles = [
-    {'name': 'Car', 'icon': Icons.directions_car, 'fuels': ['Petrol', 'Diesel', 'Electric']},
-    {'name': 'Motorcycle', 'icon': Icons.motorcycle, 'fuels': ['Petrol', 'Electric']},
-    {'name': 'Bus', 'icon': Icons.directions_bus, 'fuels': ['Diesel', 'Electric', 'None']},
-    {'name': 'Train', 'icon': Icons.train, 'fuels': ['Electric', 'Diesel']},
-    {'name': 'Bicycle', 'icon': Icons.pedal_bike, 'fuels': ['None']},
-    {'name': 'Walking', 'icon': Icons.directions_walk, 'fuels': ['None']},
+    {
+      'name': 'Car',
+      'icon': Icons.directions_car,
+      'fuels': ['Petrol', 'Diesel', 'Electric'],
+    },
+    {
+      'name': 'Motorcycle',
+      'icon': Icons.motorcycle,
+      'fuels': ['Petrol', 'Electric'],
+    },
+    {
+      'name': 'Bus',
+      'icon': Icons.directions_bus,
+      'fuels': ['Diesel', 'Electric', 'None'],
+    },
+    {
+      'name': 'Train',
+      'icon': Icons.train,
+      'fuels': ['Electric', 'Diesel'],
+    },
+    {
+      'name': 'Bicycle',
+      'icon': Icons.pedal_bike,
+      'fuels': ['None'],
+    },
+    {
+      'name': 'Walking',
+      'icon': Icons.directions_walk,
+      'fuels': ['None'],
+    },
   ];
 
   final List<String> _wasteTypes = ['Mixed', 'Organic', 'Plastic', 'Paper'];
@@ -73,7 +97,9 @@ class _CalculatorFormState extends State<CalculatorForm> {
     setState(() => _isSaving = true);
     try {
       final newLog = await _apiService.addLog(
-        _selectedVehicle == 'Bicycle' || _selectedVehicle == 'Walking' ? 0.0 : _distance,
+        _selectedVehicle == 'Bicycle' || _selectedVehicle == 'Walking'
+            ? 0.0
+            : _distance,
         _selectedVehicle,
         _selectedFuel,
         _electricityKwh,
@@ -86,9 +112,9 @@ class _CalculatorFormState extends State<CalculatorForm> {
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save log: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to save log: $e')));
     } finally {
       setState(() => _isSaving = false);
     }
@@ -166,37 +192,61 @@ class _CalculatorFormState extends State<CalculatorForm> {
                         minimumSize: const Size(100, 48),
                       ),
                       onPressed: _prevPage,
-                      icon: const Icon(Icons.arrow_back, color: Colors.greenAccent),
-                      label: const Text('Back', style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold)),
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.greenAccent,
+                      ),
+                      label: const Text(
+                        'Back',
+                        style: TextStyle(
+                          color: Colors.greenAccent,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   )
                 else
                   const SizedBox.shrink(),
-                
+
                 _isSaving
                     ? const CircularProgressIndicator(color: Colors.greenAccent)
                     : Semantics(
-                        label: _currentStep == 2 ? 'Calculate and log daily carbon footprint' : 'Go to next step',
+                        label: _currentStep == 2
+                            ? 'Calculate and log daily carbon footprint'
+                            : 'Go to next step',
                         button: true,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.greenAccent[400],
                             foregroundColor: Colors.black,
                             minimumSize: const Size(160, 48),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             elevation: 8,
                             shadowColor: Colors.greenAccent.withOpacity(0.3),
                           ),
-                          onPressed: _currentStep == 2 ? _submitForm : _nextPage,
+                          onPressed: _currentStep == 2
+                              ? _submitForm
+                              : _nextPage,
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                _currentStep == 2 ? 'Calculate & Log' : 'Next Step',
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                _currentStep == 2
+                                    ? 'Calculate & Log'
+                                    : 'Next Step',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               const SizedBox(width: 8),
-                              Icon(_currentStep == 2 ? Icons.check : Icons.arrow_forward, size: 18),
+                              Icon(
+                                _currentStep == 2
+                                    ? Icons.check
+                                    : Icons.arrow_forward,
+                                size: 18,
+                              ),
                             ],
                           ),
                         ),
@@ -229,8 +279,8 @@ class _CalculatorFormState extends State<CalculatorForm> {
                   color: isCompleted
                       ? Colors.greenAccent
                       : isActive
-                          ? Colors.greenAccent.withOpacity(0.2)
-                          : Colors.grey[800],
+                      ? Colors.greenAccent.withOpacity(0.2)
+                      : Colors.grey[800],
                   border: Border.all(
                     color: isCompleted || isActive
                         ? Colors.greenAccent
@@ -243,7 +293,7 @@ class _CalculatorFormState extends State<CalculatorForm> {
                             color: Colors.greenAccent.withOpacity(0.4),
                             blurRadius: 10,
                             spreadRadius: 1,
-                          )
+                          ),
                         ]
                       : [],
                 ),
@@ -253,7 +303,9 @@ class _CalculatorFormState extends State<CalculatorForm> {
                       : Text(
                           '${index + 1}',
                           style: TextStyle(
-                            color: isActive ? Colors.greenAccent : Colors.white60,
+                            color: isActive
+                                ? Colors.greenAccent
+                                : Colors.white60,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -270,8 +322,8 @@ class _CalculatorFormState extends State<CalculatorForm> {
                     color: isActive
                         ? Colors.greenAccent
                         : isCompleted
-                            ? Colors.white
-                            : Colors.white30,
+                        ? Colors.white
+                        : Colors.white30,
                     fontSize: 13,
                     fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                   ),
@@ -295,7 +347,9 @@ class _CalculatorFormState extends State<CalculatorForm> {
   }
 
   Widget _buildTransportStep() {
-    final selectedVehicleData = _vehicles.firstWhere((v) => v['name'] == _selectedVehicle);
+    final selectedVehicleData = _vehicles.firstWhere(
+      (v) => v['name'] == _selectedVehicle,
+    );
     final fuelOptions = selectedVehicleData['fuels'] as List<String>;
 
     // Ensure selected fuel matches options
@@ -303,7 +357,8 @@ class _CalculatorFormState extends State<CalculatorForm> {
       _selectedFuel = fuelOptions.first;
     }
 
-    final isZeroEmissions = _selectedVehicle == 'Bicycle' || _selectedVehicle == 'Walking';
+    final isZeroEmissions =
+        _selectedVehicle == 'Bicycle' || _selectedVehicle == 'Walking';
 
     return SingleChildScrollView(
       child: Column(
@@ -311,7 +366,11 @@ class _CalculatorFormState extends State<CalculatorForm> {
         children: [
           const Text(
             'Mode of Transport',
-            style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 12),
           // Horizontal Vehicle selection grid
@@ -360,7 +419,7 @@ class _CalculatorFormState extends State<CalculatorForm> {
                                 color: Colors.greenAccent.withOpacity(0.1),
                                 blurRadius: 8,
                                 spreadRadius: 1,
-                              )
+                              ),
                             ]
                           : [],
                     ),
@@ -369,7 +428,9 @@ class _CalculatorFormState extends State<CalculatorForm> {
                       children: [
                         Icon(
                           vehicle['icon'],
-                          color: isSelected ? Colors.greenAccent : Colors.white70,
+                          color: isSelected
+                              ? Colors.greenAccent
+                              : Colors.white70,
                           size: 20,
                         ),
                         const SizedBox(height: 4),
@@ -378,7 +439,9 @@ class _CalculatorFormState extends State<CalculatorForm> {
                           style: TextStyle(
                             color: isSelected ? Colors.white : Colors.white70,
                             fontSize: 12,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                         ),
                       ],
@@ -408,7 +471,9 @@ class _CalculatorFormState extends State<CalculatorForm> {
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.03),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.white.withOpacity(0.08)),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.08),
+                          ),
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
@@ -424,7 +489,9 @@ class _CalculatorFormState extends State<CalculatorForm> {
                               );
                             }).toList(),
                             onChanged: (val) {
-                              if (val != null) setState(() => _selectedFuel = val);
+                              if (val != null) {
+                                setState(() => _selectedFuel = val);
+                              }
                             },
                           ),
                         ),
@@ -435,18 +502,26 @@ class _CalculatorFormState extends State<CalculatorForm> {
               ],
             ),
             const SizedBox(height: 20),
-            
+
             // Distance slider
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
                   'Daily Distance Traveled',
-                  style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
                   '${_distance.toStringAsFixed(0)} km',
-                  style: const TextStyle(color: Colors.greenAccent, fontSize: 14, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.greenAccent,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -480,7 +555,11 @@ class _CalculatorFormState extends State<CalculatorForm> {
                     SizedBox(height: 12),
                     Text(
                       'Zero Emissions Mode Selected!',
-                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(height: 4),
                     Text(
@@ -491,7 +570,7 @@ class _CalculatorFormState extends State<CalculatorForm> {
                 ),
               ),
             ),
-          ]
+          ],
         ],
       ),
     );
@@ -504,7 +583,11 @@ class _CalculatorFormState extends State<CalculatorForm> {
         children: [
           const Text(
             'Home Electricity Consumption',
-            style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 12),
           const Text(
@@ -558,10 +641,16 @@ class _CalculatorFormState extends State<CalculatorForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Eco Saver (0 kWh)', style: TextStyle(color: Colors.grey[500], fontSize: 11)),
-              Text('High Demand (50 kWh)', style: TextStyle(color: Colors.grey[500], fontSize: 11)),
+              Text(
+                'Eco Saver (0 kWh)',
+                style: TextStyle(color: Colors.grey[500], fontSize: 11),
+              ),
+              Text(
+                'High Demand (50 kWh)',
+                style: TextStyle(color: Colors.grey[500], fontSize: 11),
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -574,16 +663,26 @@ class _CalculatorFormState extends State<CalculatorForm> {
         children: [
           const Text(
             'Household Waste',
-            style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Estimated Daily Waste Weight', style: TextStyle(color: Colors.white70, fontSize: 13)),
+              const Text(
+                'Estimated Daily Waste Weight',
+                style: TextStyle(color: Colors.white70, fontSize: 13),
+              ),
               Text(
                 '${_wasteKg.toStringAsFixed(1)} kg',
-                style: const TextStyle(color: Colors.cyanAccent, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: Colors.cyanAccent,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
@@ -609,7 +708,11 @@ class _CalculatorFormState extends State<CalculatorForm> {
           const SizedBox(height: 16),
           const Text(
             'Waste Composition',
-            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 10),
           Row(
@@ -625,13 +728,17 @@ class _CalculatorFormState extends State<CalculatorForm> {
                     backgroundColor: Colors.white.withOpacity(0.02),
                     labelStyle: TextStyle(
                       color: isSelected ? Colors.cyanAccent : Colors.white70,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                       fontSize: 12,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                       side: BorderSide(
-                        color: isSelected ? Colors.cyanAccent : Colors.white.withOpacity(0.08),
+                        color: isSelected
+                            ? Colors.cyanAccent
+                            : Colors.white.withOpacity(0.08),
                       ),
                     ),
                     onSelected: (selected) {
@@ -646,10 +753,16 @@ class _CalculatorFormState extends State<CalculatorForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Recycling Rate', style: TextStyle(color: Colors.white70, fontSize: 13)),
+              const Text(
+                'Recycling Rate',
+                style: TextStyle(color: Colors.white70, fontSize: 13),
+              ),
               Text(
                 '${_recyclingRate.toStringAsFixed(0)}%',
-                style: const TextStyle(color: Colors.cyanAccent, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: Colors.cyanAccent,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),

@@ -39,7 +39,7 @@ void main() {
         'transportTotalCo2Kg': 15.0,
         'electricityTotalCo2Kg': 20.0,
         'wasteTotalCo2Kg': 15.0,
-        'logCount': 4
+        'logCount': 4,
       };
 
       final stats = CarbonStats.fromJson(json);
@@ -51,23 +51,43 @@ void main() {
       final service = ApiService();
 
       // Negative distance
-      expect(() => service.addLog(-5.0, 'Car', 'Petrol', 10.0, 2.0, 'Mixed', 30.0), throwsArgumentError);
+      expect(
+        () => service.addLog(-5.0, 'Car', 'Petrol', 10.0, 2.0, 'Mixed', 30.0),
+        throwsArgumentError,
+      );
 
       // Distance out of bounds
-      expect(() => service.addLog(1500.0, 'Car', 'Petrol', 10.0, 2.0, 'Mixed', 30.0), throwsArgumentError);
+      expect(
+        () => service.addLog(1500.0, 'Car', 'Petrol', 10.0, 2.0, 'Mixed', 30.0),
+        throwsArgumentError,
+      );
 
       // Negative electricity
-      expect(() => service.addLog(10.0, 'Car', 'Petrol', -2.0, 2.0, 'Mixed', 30.0), throwsArgumentError);
+      expect(
+        () => service.addLog(10.0, 'Car', 'Petrol', -2.0, 2.0, 'Mixed', 30.0),
+        throwsArgumentError,
+      );
 
       // Negative recycling rate
-      expect(() => service.addLog(10.0, 'Car', 'Petrol', 10.0, 2.0, 'Mixed', -10.0), throwsArgumentError);
+      expect(
+        () => service.addLog(10.0, 'Car', 'Petrol', 10.0, 2.0, 'Mixed', -10.0),
+        throwsArgumentError,
+      );
     });
 
     test('ApiService Standalone Local Carbon Math Calculation', () async {
       final service = ApiService();
-      
-      final log = await service.addLog(50.0, 'Car', 'Petrol', 10.0, 5.0, 'Mixed', 40.0);
-      
+
+      final log = await service.addLog(
+        50.0,
+        'Car',
+        'Petrol',
+        10.0,
+        5.0,
+        'Mixed',
+        40.0,
+      );
+
       // Transport: 50km * 0.18 (Petrol Car) = 9.0 kg CO2
       // Electricity: 10 kWh * 0.40 = 4.0 kg CO2
       // Waste: 5 kg * 1.9 * (1 - 0.4) = 5.7 kg CO2

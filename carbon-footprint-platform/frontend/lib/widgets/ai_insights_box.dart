@@ -18,7 +18,8 @@ class AiInsightsBox extends StatefulWidget {
   State<AiInsightsBox> createState() => _AiInsightsBoxState();
 }
 
-class _AiInsightsBoxState extends State<AiInsightsBox> with SingleTickerProviderStateMixin {
+class _AiInsightsBoxState extends State<AiInsightsBox>
+    with SingleTickerProviderStateMixin {
   late AnimationController _glowController;
   Timer? _streamingTimer;
   String _displayedText = '';
@@ -51,21 +52,16 @@ class _AiInsightsBoxState extends State<AiInsightsBox> with SingleTickerProvider
   }
 
   void _generateInsightsText() {
-    final double total = widget.transportCo2 + widget.electricityCo2 + widget.wasteCo2;
+    final double total =
+        widget.transportCo2 + widget.electricityCo2 + widget.wasteCo2;
 
-    _fullInsightText = 
+    _fullInsightText =
         "🤖 **CARBON INSIGHTS ENGINE** [ONLINE]\n"
         "Analyzing daily logs... footprint totals **${total.toStringAsFixed(2)} kg CO2**.\n\n"
         "Here are three high-impact, personalized actions to lower your footprint:\n\n"
-        "1. 🚗 **Transportation**: ${widget.transportCo2 > 3.0 
-            ? 'Your transit emissions are significant (${widget.transportCo2.toStringAsFixed(1)} kg). Consider telecommuting tomorrow or combining errands to reduce travel by 10 km. Saving: **~1.8 kg CO2**.' 
-            : 'Excellent job keeping transit emissions low! Walk or cycle for short distances to maintain your zero-emission streak.'}\n\n"
-        "2. ⚡ **Electricity Usage**: ${widget.electricityCo2 > 4.0 
-            ? 'Household electricity is your leading footprint segment today. Try adjusting your thermostat by 1°C and disconnecting standby appliances. Saving: **~0.6 kg CO2/day**.' 
-            : 'Your household energy usage is very efficient. Keep it up by using natural daylight and LED lighting.'}\n\n"
-        "3. ♻️ **Waste Management**: ${widget.wasteCo2 > 2.0 
-            ? 'Your municipal waste emissions are active. Separating compostable organic waste from plastics will double your recycling factor. Saving: **~1.2 kg CO2/day**.' 
-            : 'Your recycling and waste management levels are optimal. Consider buying items with less packaging to reduce bulk waste.'}";
+        "1. 🚗 **Transportation**: ${widget.transportCo2 > 3.0 ? 'Your transit emissions are significant (${widget.transportCo2.toStringAsFixed(1)} kg). Consider telecommuting tomorrow or combining errands to reduce travel by 10 km. Saving: **~1.8 kg CO2**.' : 'Excellent job keeping transit emissions low! Walk or cycle for short distances to maintain your zero-emission streak.'}\n\n"
+        "2. ⚡ **Electricity Usage**: ${widget.electricityCo2 > 4.0 ? 'Household electricity is your leading footprint segment today. Try adjusting your thermostat by 1°C and disconnecting standby appliances. Saving: **~0.6 kg CO2/day**.' : 'Your household energy usage is very efficient. Keep it up by using natural daylight and LED lighting.'}\n\n"
+        "3. ♻️ **Waste Management**: ${widget.wasteCo2 > 2.0 ? 'Your municipal waste emissions are active. Separating compostable organic waste from plastics will double your recycling factor. Saving: **~1.2 kg CO2/day**.' : 'Your recycling and waste management levels are optimal. Consider buying items with less packaging to reduce bulk waste.'}";
   }
 
   void _startStreaming() {
@@ -108,10 +104,12 @@ class _AiInsightsBoxState extends State<AiInsightsBox> with SingleTickerProvider
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.greenAccent.withOpacity(0.04 + (_glowController.value * 0.04)),
+                color: Colors.greenAccent.withOpacity(
+                  0.04 + (_glowController.value * 0.04),
+                ),
                 blurRadius: 16 + (_glowController.value * 12),
                 spreadRadius: 2,
-              )
+              ),
             ],
           ),
           child: child,
@@ -140,7 +138,7 @@ class _AiInsightsBoxState extends State<AiInsightsBox> with SingleTickerProvider
                               color: Colors.greenAccent,
                               blurRadius: 6,
                               spreadRadius: 1,
-                            )
+                            ),
                           ]
                         : [],
                   ),
@@ -166,7 +164,11 @@ class _AiInsightsBoxState extends State<AiInsightsBox> with SingleTickerProvider
                   )
                 else
                   IconButton(
-                    icon: const Icon(Icons.refresh, size: 16, color: Colors.white60),
+                    icon: const Icon(
+                      Icons.refresh,
+                      size: 16,
+                      color: Colors.white60,
+                    ),
                     onPressed: _startStreaming,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -178,9 +180,7 @@ class _AiInsightsBoxState extends State<AiInsightsBox> with SingleTickerProvider
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                child: RichText(
-                  text: _parseMarkdown(_displayedText),
-                ),
+                child: RichText(text: _parseMarkdown(_displayedText)),
               ),
             ),
           ],
@@ -198,25 +198,36 @@ class _AiInsightsBoxState extends State<AiInsightsBox> with SingleTickerProvider
       final line = lines[i];
 
       if (line.startsWith('🤖')) {
-        spans.add(TextSpan(
-          text: '$line\n',
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'monospace',
-            letterSpacing: 1.1,
-            fontSize: 14,
+        spans.add(
+          TextSpan(
+            text: '$line\n',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'monospace',
+              letterSpacing: 1.1,
+              fontSize: 14,
+            ),
           ),
-        ));
+        );
         continue;
       }
 
       // Check for bullet items with emojis
       // Parse inline **bold** text
-      spans.add(_parseInlineFormatting(line + (i < lines.length - 1 ? '\n' : '')));
+      spans.add(
+        _parseInlineFormatting(line + (i < lines.length - 1 ? '\n' : '')),
+      );
     }
 
-    return TextSpan(children: spans, style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 13, height: 1.5));
+    return TextSpan(
+      children: spans,
+      style: TextStyle(
+        color: Colors.white.withOpacity(0.85),
+        fontSize: 13,
+        height: 1.5,
+      ),
+    );
   }
 
   TextSpan _parseInlineFormatting(String line) {
@@ -228,13 +239,15 @@ class _AiInsightsBoxState extends State<AiInsightsBox> with SingleTickerProvider
       if (match.start > start) {
         segments.add(TextSpan(text: line.substring(start, match.start)));
       }
-      segments.add(TextSpan(
-        text: match.group(1),
-        style: const TextStyle(
-          color: Colors.greenAccent,
-          fontWeight: FontWeight.bold,
+      segments.add(
+        TextSpan(
+          text: match.group(1),
+          style: const TextStyle(
+            color: Colors.greenAccent,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-      ));
+      );
       start = match.end;
     }
 

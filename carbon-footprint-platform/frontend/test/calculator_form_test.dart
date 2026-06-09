@@ -12,11 +12,7 @@ void main() {
     // Build the widget in a test environment
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: CalculatorForm(
-            onLogAdded: (log) {},
-          ),
-        ),
+        home: Scaffold(body: CalculatorForm(onLogAdded: (log) {})),
       ),
     );
 
@@ -38,7 +34,7 @@ void main() {
 
     // Verify Step 2 (Electricity) is visible
     expect(find.text('Home Electricity Consumption'), findsOneWidget);
-    
+
     // Verify "Back" button is now visible
     expect(find.text('Back'), findsOneWidget);
 
